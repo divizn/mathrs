@@ -1,7 +1,5 @@
-.PHONY: init dev
-
-init:
-	source .env/bin/activate
+.PHONY: dev
 
 dev:
-	maturin develop
+	./scripts/run_dev.sh
+
