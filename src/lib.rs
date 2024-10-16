@@ -1,6 +1,8 @@
 use pyo3::prelude::*;
 
 const EPSILON: f64 = 1e-10; // Tolerance for floating-point comparisons
+const HALF_PI: f64 = std::f64::consts::FRAC_PI_2; // π/2 (90 degrees)
+const THREE_HALF_PI: f64 = 3.0 * HALF_PI; // 3π/2 (270 degrees)
 
 
 /// Sums a list of numbers.
@@ -71,10 +73,9 @@ fn sqrt(n: f64) -> f64 {
 ///
 /// # Example
 /// ```python
-/// mathrs.sin(math.pi)  # Returns a value close to 0
-/// mathrs.sin(180, degrees=True)  # Also returns a value close to 0
+/// mathrs.sin(math.pi)  # Returns 0.0
+/// mathrs.sin(180, degrees=True)  # Also returns 0.0
 /// ```
-
 #[pyfunction]
 #[pyo3(signature = (n, degrees=false))]
 fn sin(n: f64, degrees: bool) -> f64 {
@@ -97,11 +98,50 @@ fn cos(n: f64) -> f64 {
     n.cos()
 }
 
-/// Finds the Tangent value of a number
+/// Finds the Tangent value of a number, with an optional `degrees` argument (default is radians).
+/// 
+/// Due to floating-point precision, results for values like `tan(math.pi/2)` may not be exactly infinity, however, we handle this case and treat it as infinity
+/// (e.g., `1.633123935319537e16`). This large difference is expected and is treated as infinity for practical purposes.
+/// Floating-point precision can also cause small values to be returned instead of zero - we use a tolerance to handle this (the same for others).
+/// 
+/// # Arguments
+/// * `n` - Input number (radians by default).
+/// * `degrees` - Set to `true` if `n` is in degrees (optional, default `false`).
+/// 
+/// # Example
+/// ```python
+/// mathrs.tan(math.pi/2)  # Returns inf
+/// mathrs.tan(90, degrees=True)  # Also returns a inf
+/// mathrs.tan(0)  # Returns 0.0
+/// mathrs.tan(0, degrees=True)  # Also returns 0.0
+/// mathrs.tan(270, degrees=True)  # Returns negative inf
+/// ```
 #[pyfunction]
-fn tan(n: f64) -> f64 {
-    n.tan()
+#[pyo3(signature = (n, degrees=false))]
+fn tan(n: f64, degrees: bool) -> f64 {
+    let radians = if degrees {
+        n.to_radians()
+    } else {
+        n
+    };
+
+    // Check for angles near odd multiples of π/2 (90°, 270°, etc.) where tangent is infinite
+    if (radians - HALF_PI).abs() < EPSILON {
+        return f64::INFINITY; // Approaching π/2 (90°)
+    } else if (radians - THREE_HALF_PI).abs() < EPSILON {
+        return f64::NEG_INFINITY; // Approaching 3π/2 (270°)
+    }
+
+    let result = radians.tan();
+
+    if result.abs() < EPSILON {
+        return 0.0; // Handle cases where result should be close to zero
+    } else {
+        return result; // Return the computed result
+    }
 }
+
+
 
 // TODO: implement properly
 /// Applies a ReLU activation function to a number
