@@ -15,8 +15,8 @@ const THREE_HALF_PI: f64 = 3.0 * HALF_PI; // 3π/2 (270 degrees)
 /// mathrs.sum_list([1, 2, 3])  # Returns 6
 /// ```
 #[pyfunction]
-fn sum_list(list: Vec<usize>) -> PyResult<usize> {
-    Ok(list.iter().sum())
+fn sum_list(list: Vec<usize>) -> usize {
+    list.iter().sum()
 }
 
 /// Doubles numbers in a list and returns the doubled list
@@ -29,8 +29,8 @@ fn sum_list(list: Vec<usize>) -> PyResult<usize> {
 /// mathrs.double_list([1, 2, 3])  # Returns [2, 4, 6]
 /// ```
 #[pyfunction]
-fn double_list(list: Vec<usize>) -> PyResult<Vec<usize>> {
-    Ok(list.iter().map(|x| x * 2).collect())
+fn double_list(list: Vec<usize>) -> Vec<usize> {
+    list.iter().map(|x| x * 2).collect()
 }
 
 /// Doubles a number
@@ -239,4 +239,89 @@ fn mathrs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sigmoid, m)?)?;
     m.add_function(wrap_pyfunction!(softmax, m)?)?;
     Ok(())
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_double() {
+        assert_eq!(double(2), 4);
+        assert_eq!(double(0), 0);
+    }
+    
+    #[test]
+    fn test_sum_list() {
+        assert_eq!(sum_list(vec![1, 2, 3]), 6);
+        assert_eq!(sum_list(vec![0, 0, 0]), 0);
+    }
+    
+    #[test]
+    fn test_double_list() {
+        assert_eq!(double_list(vec![1, 2, 3]), vec![2, 4, 6]);
+        assert_eq!(double_list(vec![0, 0, 0]), vec![0, 0, 0]);
+    }
+    
+    #[test]
+    fn test_sqrt() {
+        assert_eq!(sqrt(4.0), 2.0);
+        assert_eq!(sqrt(0.0), 0.0);
+    }
+
+    
+    #[test]
+    fn test_sin() {
+        assert_eq!(sin(0.0, false), 0.0);
+        assert_eq!(sin(0.0, true), 0.0);
+        assert_eq!(sin(HALF_PI, false), 1.0);
+        assert_eq!(sin(90.0, true), 1.0);
+        assert_eq!(sin(THREE_HALF_PI, false), -1.0);
+        assert_eq!(sin(270.0, true), -1.0);
+    }
+
+    #[test]
+    fn test_cos() {
+        assert_eq!(cos(0.0, false), 1.0);
+        assert_eq!(cos(0.0, true), 1.0);
+        assert_eq!(cos(HALF_PI, false), 0.0);
+        assert_eq!(cos(90.0, true), 0.0);
+        assert_eq!(cos(THREE_HALF_PI, false), 0.0);
+        assert_eq!(cos(270.0, true), 0.0);
+    }
+
+    #[test]
+    fn test_tan() {
+        assert_eq!(tan(0.0, false), 0.0);
+        assert_eq!(tan(0.0, true), 0.0);
+        assert_eq!(tan(HALF_PI, false), f64::INFINITY);
+        assert_eq!(tan(90.0, true), f64::INFINITY);
+        assert_eq!(tan(THREE_HALF_PI, false), f64::NEG_INFINITY);
+        assert_eq!(tan(270.0, true), f64::NEG_INFINITY);
+    }
+    
+    #[test]
+    fn test_relu() {
+        assert_eq!(relu(3.5), 3.5);
+        assert_eq!(relu(0.0), 0.0);
+        assert_eq!(relu(-1.2), 0.0);
+    }
+    
+    #[test]
+    fn test_sigmoid() {
+        assert!((sigmoid(0.0) - 0.5).abs() < 1e-10);
+        assert!((sigmoid(1.0) - 0.731058).abs() < 1e-6);
+        assert!((sigmoid(-1.0) - 0.268941).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_softmax() {
+        let scores = vec![1.0, 2.0, 3.0];
+        let expected = vec![0.09003057, 0.24472847, 0.66524096]; // Normalized probabilities
+        let result = softmax(scores);
+        for (r, e) in result.iter().zip(expected.iter()) {
+            assert!((r - e).abs() < 1e-6);
+        }
+    }
 }
