@@ -24,6 +24,40 @@ fn sqrt(n: f64) -> f64 {
     n.sqrt()
 }
 
+/// Finds the Sine value of a number
+#[pyfunction]
+fn sin(n: f64) -> f64 {
+    n.sin()
+}
+
+/// Finds the Cosine value of a number
+#[pyfunction]
+fn cos(n: f64) -> f64 {
+    n.cos()
+}
+
+/// Finds the Tangent value of a number
+#[pyfunction]
+fn tan(n: f64) -> f64 {
+    n.tan()
+}
+
+// TODO: implement properly
+/// Applies a ReLU activation function to a number
+#[pyfunction]
+fn relu(n: f64) -> f64 { 
+    if n > 0.0 {
+        n
+    } else {
+        0.0
+    }
+}
+
+/// Applies a Sigmoid activation function to a number
+#[pyfunction]
+fn sigmoid(n: f64) -> f64 {
+    1.0 / (1.0 + (-n).exp())
+}
 
 /// A Python math module implemented in Rust.
 #[pymodule]
