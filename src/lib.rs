@@ -66,5 +66,10 @@ fn mathrs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sum_list, m)?)?;
     m.add_function(wrap_pyfunction!(sqrt, m)?)?;
     m.add_function(wrap_pyfunction!(double_list, m)?)?;
+    m.add_function(wrap_pyfunction!(sin, m)?)?;
+    m.add_function(wrap_pyfunction!(cos, m)?)?;
+    m.add_function(wrap_pyfunction!(tan, m)?)?;
+    m.add_function(wrap_pyfunction!(relu, m)?)?;
+    m.add_function(wrap_pyfunction!(sigmoid, m)?)?;
     Ok(())
 }
