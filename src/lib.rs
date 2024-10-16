@@ -208,6 +208,23 @@ fn sigmoid(n: f64) -> f64 {
     1.0 / (1.0 + (-n).exp())
 }
 
+/// Computes the Softmax activation function of a list of numbers.
+/// Maps a list of real values to the range [0, 1] such that the sum of the values is 1.
+/// 
+/// # Arguments
+/// * `list` - Input list of numbers.
+/// 
+/// # Example
+/// ```python
+/// mathrs.softmax([1, 2, 3])  # Returns [~0.09, ~0.24, ~0.67]
+/// ```
+#[pyfunction]
+#[pyo3(signature = (list))]
+fn softmax(list: Vec<f64>) -> Vec<f64> {
+    let sum: f64 = list.iter().map(|x| x.exp()).sum();
+    list.iter().map(|x| x.exp() / sum).collect()
+}
+
 /// A Python math module implemented in Rust.
 #[pymodule]
 fn mathrs(m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -220,5 +237,6 @@ fn mathrs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(tan, m)?)?;
     m.add_function(wrap_pyfunction!(relu, m)?)?;
     m.add_function(wrap_pyfunction!(sigmoid, m)?)?;
+    m.add_function(wrap_pyfunction!(softmax, m)?)?;
     Ok(())
 }
