@@ -170,9 +170,18 @@ fn tan(n: f64, degrees: bool) -> f64 {
 
 
 
-// TODO: implement properly
-/// Applies a ReLU activation function to a number
+/// Computes the Rectified Linear Unit (ReLU) of a number.
+/// 
+/// # Arguments
+/// * `n` - Input number.
+/// 
+/// # Example
+/// ```python
+/// mathrs.relu(-1)  # Returns 0.0
+/// mathrs.relu(1)  # Returns 1.0
+/// ```
 #[pyfunction]
+#[pyo3(signature = (n))]
 fn relu(n: f64) -> f64 { 
     if n > 0.0 {
         n
@@ -181,7 +190,19 @@ fn relu(n: f64) -> f64 {
     }
 }
 
-/// Applies a Sigmoid activation function to a number
+/// Computes the Sigmoid activation function of a number.
+/// Maps any real value to the range [0, 1].
+/// 
+/// # Arguments
+/// * `n` - Input number.
+/// 
+/// # Example
+/// ```python
+/// mathrs.sigmoid(0)  # Returns 0.5
+/// mathrs.sigmoid(1)  # Returns ~0.731
+/// mathrs.sigmoid(-1)  # Returns ~0.268
+/// mathrs.sigmoid(10)  # Returns ~0.999
+/// ```
 #[pyfunction]
 fn sigmoid(n: f64) -> f64 {
     1.0 / (1.0 + (-n).exp())
