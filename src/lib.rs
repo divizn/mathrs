@@ -93,9 +93,36 @@ fn sin(n: f64, degrees: bool) -> f64 {
 }
 
 /// Finds the Cosine value of a number
+/// 
+/// # Arguments
+/// * `n` - Input number (radians by default).
+/// * `degrees` - Set to `true` if `n` is in degrees (optional, default `false`).
+/// 
+/// # Example
+/// ```python
+/// mathrs.cos(math.pi)  # Returns -1.0
+/// mathrs.cos(180, degrees=True)  # Also returns -1.0
+/// mathrs.cos(0)  # Returns 1.0
+/// mathrs.cos(0, degrees=True)  # Also returns 1.0
+/// ```
 #[pyfunction]
-fn cos(n: f64) -> f64 {
-    n.cos()
+#[pyo3(signature = (n, degrees=false))]
+fn cos(n: f64, degrees: bool) -> f64 {
+    let radians = if degrees {
+        n.to_radians()
+    } else {
+        n
+    };
+
+    // Handle special cases for the cosine function
+    let result = radians.cos();
+
+    // Handle cases where result should be close to zero
+    if result.abs() < EPSILON {
+        return 0.0; // Return zero for values very close to zero
+    } else {
+        return result; // Return the computed result
+    }
 }
 
 /// Finds the Tangent value of a number, with an optional `degrees` argument (default is radians).
