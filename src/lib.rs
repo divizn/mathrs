@@ -29,7 +29,7 @@ fn sum_list(list: Vec<usize>) -> usize {
 /// mathrs.double_list([1, 2, 3])  # Returns [2, 4, 6]
 /// ```
 #[pyfunction]
-fn double_list(list: Vec<usize>) -> Vec<usize> {
+fn double_list(list: Vec<isize>) -> Vec<isize> {
     list.iter().map(|x| x * 2).collect()
 }
 
@@ -43,7 +43,7 @@ fn double_list(list: Vec<usize>) -> Vec<usize> {
 /// mathrs.double(4)  # Returns 8
 /// ```
 #[pyfunction]
-fn double(n: usize) -> usize {
+fn double(n: isize) -> isize {
     n * 2
 }
 
@@ -249,6 +249,7 @@ mod tests {
     #[test]
     fn test_double() {
         assert_eq!(double(2), 4);
+        assert_eq!(double(-2), -4);
         assert_eq!(double(0), 0);
     }
     
@@ -262,6 +263,7 @@ mod tests {
     fn test_double_list() {
         assert_eq!(double_list(vec![1, 2, 3]), vec![2, 4, 6]);
         assert_eq!(double_list(vec![0, 0, 0]), vec![0, 0, 0]);
+        assert_eq!(double_list(vec![-2, -4, -2]), vec![-4, -8, -4]);
     }
     
     #[test]
