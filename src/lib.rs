@@ -15,7 +15,7 @@ const THREE_HALF_PI: f64 = 3.0 * HALF_PI; // 3π/2 (270 degrees)
 /// mathrs.sum_list([1, 2, 3])  # Returns 6
 /// ```
 #[pyfunction]
-fn sum_list(list: Vec<usize>) -> usize {
+fn sum_list(list: Vec<isize>) -> isize {
     list.iter().sum()
 }
 
@@ -257,6 +257,7 @@ mod tests {
     fn test_sum_list() {
         assert_eq!(sum_list(vec![1, 2, 3]), 6);
         assert_eq!(sum_list(vec![0, 0, 0]), 0);
+        assert_eq!(sum_list(vec![-2, -4, -2]), -8);
     }
     
     #[test]
